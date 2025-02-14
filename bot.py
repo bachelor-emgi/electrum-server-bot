@@ -7,8 +7,9 @@ import websockets
 import ssl
 
 # Discord bot token and webhook channel ID
-TOKEN = ''
+TOKEN = 'token'
 CHANNEL_ID = 1339641920141393970
+VOICE_ID = 1339959327754162206
 
 # Electrum Server API endpoint
 API_URL = "https://servers.pepelum.site/"
@@ -97,6 +98,7 @@ async def create_online_embed():
     except Exception as e:
         embed.add_field(name="Error", value=str(e), inline=False)
 
+    await update_channel_name(len(online_servers), len(server_urls))
     return embed
 
 # Function to create the embed for offline servers
@@ -137,13 +139,20 @@ async def create_offline_embed():
 
     return embed
 
+async def update_channel_name(online_servers, total_servers):
+    guild = client.guilds[0]  # Assuming the bot is in only one guild
+    channel = guild.get_channel(VOICE_ID)
+    new_name = f"Servers {online_servers}/{total_servers}"
+    if channel and channel.name != new_name:
+        await channel.edit(name=new_name)
+
 # Create a bot instance
 intents = discord.Intents.default()
 intents.messages = True
 client = discord.Client(intents=intents)
 
 # Store the ID of the message for later updates
-online_message_id = None
+online_message_id = 1339959628858921031
 offline_message_id = None
 
 # Function to send or edit a message
