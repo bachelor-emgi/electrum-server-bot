@@ -15,11 +15,28 @@ VOICE_ID = 1339959327754162206
 # Electrum Server API endpoint
 API_URL = "https://servers.pepelum.site/"
 
+async def get_host_ip():
+    try:
+        response = requests.get('https://api.ipify.org?format=json')
+        response.raise_for_status()
+        ip_data = response.json()
+        return ip_data['ip']
+    except Exception as e:
+        print(f"Error getting host IP: {e}")
+        return None
+
 async def resolve_a_records(domain):
     try:
+        # Get the current host machine's IP address using the API
+        host_ip = await get_host_ip()
+        if not host_ip:
+            raise Exception("Could not retrieve host IP address")
+        
         # Get only the A records (IPv4 addresses)
         _, _, a_records = socket.gethostbyname_ex(domain)
-        return list(set(a_records))
+        # Check if any A record matches the host IP and replace it with 10.0.1.1 if it does
+        updated_a_records = ['10.0.1.1' if a_record == host_ip else a_record for a_record in a_records]
+        return list(set(updated_a_records))
     except Exception as e:
         print(f"Error resolving {domain}: {e}")
         return []
