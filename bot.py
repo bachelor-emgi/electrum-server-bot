@@ -95,17 +95,17 @@ async def check_sync(server_url, server_name):
 
     # Collect the status for the server if any A record was online
     if online_count > 0:
-        status_messages.append(f"Synced (Block height: {block_height})\nVersion: {version}")
-        online_status = f"{server_name}\nSynced (Block height: {block_height})\nVersion: {version}\nOnline: {online_count}/{len(a_records)}"
+        status_messages.append(f"**Block height:** {block_height}\n**Online:** {online_count}/{len(a_records)}\n**Version:** {version}")
+        online_status = f"{server_name}\n**Block height:** {block_height}\n**Online:** {online_count}/{len(a_records)}\n**Version:** {version}"
         return online_status, True, status_messages, online_count, len(a_records)
     else:
-        status_messages.append(f"Not Synced\nVersion: {version}")
+        status_messages.append(f"**Not Synced**\n**Version:** {version}")
         return f"{server_name} - Offline", False, status_messages, online_count, len(a_records)
 
 async def create_online_embed():
     embed = discord.Embed(
-        title="Electrum Server Sync Check - Online Servers",
-        description="The following Electrum servers are online and synced:",
+        title="Online Servers",
+        description="These servers are reachable and online:",
         color=discord.Color.green()
     )
 
@@ -128,7 +128,7 @@ async def create_online_embed():
             
             if is_online:
                 online_servers.append(status)
-                embed.add_field(name=f"{server_name} (Online {online_count}/{num_a_records} servers)", value="\n".join(status_messages), inline=False)
+                embed.add_field(name=f"{server_name}", value="\n".join(status_messages), inline=False)
 
         # Add the online servers to the embed
         if not online_servers:
@@ -142,8 +142,8 @@ async def create_online_embed():
 
 async def create_offline_embed():
     embed = discord.Embed(
-        title="Electrum Servers Status",
-        description="The following Electrum servers are offline:",
+        title="Offline Servers",
+        description="The following servers are offline:",
         color=discord.Color.red()
     )
 
